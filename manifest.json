@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Temporary Playlist",
+  "version": "4.5.3",
+  "description": "Adds a temporary floating playlist on YouTube when A is held while clicking videos.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "Temporary playlist"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
