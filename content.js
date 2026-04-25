@@ -101,7 +101,7 @@
       return;
     }
 
-    const video = getVideoFromTarget(target);
+    const video = getVideoFromEvent(event);
     if (!video) {
       return;
     }
@@ -156,19 +156,20 @@
     );
   }
 
-  function getVideoFromTarget(target) {
-    const directVideoLink = target.closest(VIDEO_LINK_SELECTOR);
-    const nearestLink = target.closest("a[href]");
+  function getVideoFromEvent(event) {
+    const path = getEventElements(event);
+    const directVideoLink = findClosestInPath(path, VIDEO_LINK_SELECTOR);
+    const nearestLink = findClosestInPath(path, "a[href]");
 
     if (nearestLink && !directVideoLink) {
       return null;
     }
 
-    if (!directVideoLink && target.closest(IGNORED_VIDEO_CLICK_SELECTOR)) {
+    if (!directVideoLink && findClosestInPath(path, IGNORED_VIDEO_CLICK_SELECTOR)) {
       return null;
     }
 
-    const container = target.closest(VIDEO_SELECTORS);
+    const container = findClosestInPath(path, VIDEO_SELECTORS);
     const anchor = directVideoLink || container?.querySelector(VIDEO_LINK_SELECTOR);
 
     if (!anchor || !anchor.href) {
@@ -185,14 +186,42 @@
     const title = getVideoTitle(videoContainer, anchor);
     const channel = getChannelName(videoContainer);
     const thumbnail = getThumbnail(videoContainer, id);
+    const duration = getVideoDuration(videoContainer);
 
     return {
       id,
       title,
       channel,
       thumbnail,
+      duration,
       url: `https://www.youtube.com/watch?v=${id}`
     };
+  }
+
+  function getEventElements(event) {
+    const path =
+      typeof event.composedPath === "function" ? event.composedPath() : [];
+
+    if (path.length > 0) {
+      return path.filter((node) => node instanceof Element);
+    }
+
+    return event.target instanceof Element ? [event.target] : [];
+  }
+
+  function findClosestInPath(path, selector) {
+    for (const element of path) {
+      if (element.matches(selector)) {
+        return element;
+      }
+
+      const closest = element.closest(selector);
+      if (closest) {
+        return closest;
+      }
+    }
+
+    return null;
   }
 
   function getVideoId(url) {
@@ -223,11 +252,30 @@
   }
 
   function getChannelName(container) {
-    const channelElement = container.querySelector(
-      "#channel-name a, ytd-channel-name a, .yt-lockup-metadata-view-model__metadata a"
-    );
+    const channelLink = findFirstTextElement(container, [
+      'a[href^="/@"]',
+      'a[href*="/@"]',
+      'a[href^="/channel/"]',
+      'a[href^="/c/"]',
+      'a[href^="/user/"]',
+      "#channel-name a",
+      "ytd-channel-name a",
+      ".yt-lockup-metadata-view-model__metadata a"
+    ]);
 
-    return cleanText(channelElement?.textContent || "");
+    if (channelLink) {
+      return cleanText(channelLink.textContent);
+    }
+
+    const channelText = findFirstTextElement(container, [
+      "#channel-name yt-formatted-string",
+      "ytd-channel-name yt-formatted-string",
+      "#byline-container",
+      ".yt-lockup-metadata-view-model__metadata span",
+      ".yt-content-metadata-view-model-wiz__metadata-row span"
+    ]);
+
+    return cleanText(channelText?.textContent || "");
   }
 
   function getThumbnail(container, videoId) {
@@ -246,6 +294,143 @@
     return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
   }
 
+  function getVideoDuration(container) {
+    const durationElement = findFirstTextElement(container, [
+      "ytd-thumbnail-overlay-time-status-renderer #text",
+      "ytd-thumbnail-overlay-time-status-renderer",
+      "#overlays ytd-thumbnail-overlay-time-status-renderer",
+      "#thumbnail ytd-thumbnail-overlay-time-status-renderer",
+      ".badge-shape-wiz__text",
+      ".yt-badge-shape__text",
+      ".ytp-time-duration",
+      '[aria-label*="minute"]',
+      '[aria-label*="second"]',
+      '[aria-label*="мин"]',
+      '[aria-label*="сек"]',
+      '[aria-label*="час"]'
+    ]);
+
+    const duration = getDurationFromElement(durationElement);
+    if (duration) {
+      return duration;
+    }
+
+    return findDurationInContainer(container);
+  }
+
+  function findFirstTextElement(container, selectors) {
+    for (const selector of selectors) {
+      const elements = container.querySelectorAll(selector);
+
+      for (const element of elements) {
+        const text = cleanText(
+          element.textContent ||
+            element.getAttribute("aria-label") ||
+            element.getAttribute("title")
+        );
+
+        if (text && !isMetadataNoise(text)) {
+          return element;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function findDurationInContainer(container) {
+    const candidates = container.querySelectorAll(
+      "ytd-thumbnail-overlay-time-status-renderer, .badge-shape-wiz__text, .yt-badge-shape__text, span, div"
+    );
+
+    for (const candidate of candidates) {
+      const duration = getDurationFromElement(candidate);
+
+      if (duration) {
+        return duration;
+      }
+    }
+
+    return "";
+  }
+
+  function getDurationFromElement(element) {
+    if (!element) {
+      return "";
+    }
+
+    const candidates = [
+      element.textContent,
+      element.getAttribute("aria-label"),
+      element.getAttribute("title")
+    ];
+
+    for (const candidate of candidates) {
+      const duration = normalizeDurationText(candidate);
+
+      if (duration) {
+        return duration;
+      }
+    }
+
+    return "";
+  }
+
+  function normalizeDurationText(value) {
+    const text = cleanText(value);
+
+    if (!text) {
+      return "";
+    }
+
+    const timeMatch = text.match(/\b\d{1,2}(?::\d{2}){1,2}\b/);
+    if (timeMatch) {
+      return timeMatch[0];
+    }
+
+    return parseDurationLabel(text);
+  }
+
+  function parseDurationLabel(text) {
+    const hours = getDurationPart(
+      text,
+      /(\d+)\s*(?:h|hr|hrs|hour|hours|час|часа|часов)(?=\s|,|$)/i
+    );
+    const minutes = getDurationPart(
+      text,
+      /(\d+)\s*(?:m|min|mins|minute|minutes|мин|минута|минуты|минут)(?=\s|,|$)/i
+    );
+    const seconds = getDurationPart(
+      text,
+      /(\d+)\s*(?:s|sec|secs|second|seconds|сек|секунда|секунды|секунд)(?=\s|,|$)/i
+    );
+
+    if (hours === null && minutes === null && seconds === null) {
+      return "";
+    }
+
+    if (hours !== null) {
+      return [
+        String(hours),
+        String(minutes || 0).padStart(2, "0"),
+        String(seconds || 0).padStart(2, "0")
+      ].join(":");
+    }
+
+    return [String(minutes || 0), String(seconds || 0).padStart(2, "0")].join(
+      ":"
+    );
+  }
+
+  function getDurationPart(text, pattern) {
+    const match = text.match(pattern);
+    return match ? Number(match[1]) : null;
+  }
+
+  function isMetadataNoise(value) {
+    return /просмотр|views|подпис|subscribers|назад|ago|новинка|new/i.test(value);
+  }
+
   function cleanText(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
   }
@@ -256,7 +441,10 @@
     const wasExpanded = wasVisible && !state.collapsed;
 
     if (existingIndex !== -1) {
-      state.enteringItemKey = state.videos[existingIndex].playlistItemId;
+      const existingVideo = state.videos[existingIndex];
+      state.videos[existingIndex] = mergeVideoMetadata(existingVideo, video);
+      state.enteringItemKey = existingVideo.playlistItemId;
+      saveVideos();
 
       if (state.panel) {
         renderPanel();
@@ -547,11 +735,23 @@
       item.classList.add("yt-tp-item-entering");
     }
 
+    const thumbnailWrap = document.createElement("span");
+    thumbnailWrap.className = "yt-tp-thumb-wrap";
+
     const thumbnail = document.createElement("img");
     thumbnail.className = "yt-tp-thumb";
     thumbnail.src = video.thumbnail;
     thumbnail.alt = "";
     thumbnail.loading = "lazy";
+
+    thumbnailWrap.append(thumbnail);
+
+    if (video.duration) {
+      const duration = document.createElement("span");
+      duration.className = "yt-tp-duration";
+      duration.textContent = video.duration;
+      thumbnailWrap.append(duration);
+    }
 
     const meta = document.createElement("span");
     meta.className = "yt-tp-meta";
@@ -562,7 +762,7 @@
 
     const channel = document.createElement("span");
     channel.className = "yt-tp-channel";
-    channel.textContent = video.channel || "YouTube";
+    channel.textContent = getDisplayChannel(video.channel);
 
     const remove = document.createElement("span");
     remove.className = "yt-tp-remove";
@@ -573,7 +773,7 @@
     remove.setAttribute("aria-hidden", "true");
 
     meta.append(title, channel);
-    item.append(thumbnail, meta, remove);
+    item.append(thumbnailWrap, meta, remove);
     return item;
   }
 
@@ -753,6 +953,33 @@
       typeof video.title === "string" &&
       typeof video.url === "string"
     );
+  }
+
+  function mergeVideoMetadata(existingVideo, newVideo) {
+    return {
+      ...existingVideo,
+      title: newVideo.title || existingVideo.title,
+      channel: getBetterChannel(existingVideo.channel, newVideo.channel),
+      thumbnail: newVideo.thumbnail || existingVideo.thumbnail,
+      duration: newVideo.duration || existingVideo.duration || ""
+    };
+  }
+
+  function getBetterChannel(currentChannel, nextChannel) {
+    if (isUsefulChannelName(nextChannel)) {
+      return nextChannel;
+    }
+
+    return currentChannel || "";
+  }
+
+  function getDisplayChannel(channel) {
+    return isUsefulChannelName(channel) ? channel : "Unknown channel";
+  }
+
+  function isUsefulChannelName(channel) {
+    const value = cleanText(channel);
+    return Boolean(value && value !== "YouTube");
   }
 
   function changeVisibleRows(delta) {
