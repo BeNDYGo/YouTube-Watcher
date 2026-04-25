@@ -21,19 +21,20 @@
 
 При клике на значок расширения окно можно открыть снова, если вы его закрыли. Так что рекомендуем вам закрепить значок на панели браузера
 
-![Screenshot_1](https://github.com/BeNDYGo/YouTube-Watcher/blob/main/preview/Screenshot_1.png)
-![Screenshot_2](https://github.com/BeNDYGo/YouTube-Watcher/blob/main/preview/Screenshot_4.png)
+![Screenshot_1](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_1.png)
+![Screenshot_2](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_2.png)
 
 ### Вы так же можете перемещать окно временного плейлиста
 
-![Screenshot_3](https://github.com/BeNDYGo/YouTube-Watcher/blob/main/preview/Screenshot_2.png)
-![Screenshot_4](https://github.com/BeNDYGo/YouTube-Watcher/blob/main/preview/Screenshot_3.png)
+![Screenshot_3](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_3.png)
+![Screenshot_4](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_4.png)
 
 
 # Обновления:
 >В случае выхода обновления вы будете видеть уведомление.
 
-![Screenshot_5](https://github.com/BeNDYGo/YouTube-Watcher/blob/main/preview/Screenshot_5.png)
+![Screenshot_5](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_5.png)
+
 # Конфиденциальность:
 
 > Никакие данные не передаются!
