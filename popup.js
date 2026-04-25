@@ -172,7 +172,6 @@
       normalizeVersion(manifestVersion) === normalizeVersion(remoteVersion);
 
     latestVersionButton.classList.toggle("is-hidden", isUpToDate);
-    versionsBlock.classList.toggle("is-single", isUpToDate);
   }
 
   function cleanVersion(value) {

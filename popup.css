@@ -38,10 +38,6 @@ button {
   gap: 8px;
 }
 
-.versions.is-single {
-  grid-template-columns: 1fr;
-}
-
 .version-card {
   min-height: 64px;
   display: grid;
