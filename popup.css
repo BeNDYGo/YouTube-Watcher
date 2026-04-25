@@ -38,6 +38,10 @@ button {
   gap: 8px;
 }
 
+.versions.is-single {
+  grid-template-columns: 1fr;
+}
+
 .version-card {
   min-height: 64px;
   display: grid;
@@ -45,18 +49,28 @@ button {
   gap: 7px;
   padding: 10px;
   border-radius: 8px;
+  border: 1px solid transparent;
   background: #181818;
+  appearance: none;
   text-align: left;
+  transition: background 140ms ease, box-shadow 180ms ease, transform 140ms ease;
 }
 
 .version-card-current {
   border: 1px solid rgba(245, 245, 245, 0.58);
 }
 
+.version-card-current:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.version-card-current:active {
+  transform: translateY(1px);
+}
+
 .version-card-latest {
   color: #fff;
   border: 1px solid rgb(234, 51, 62);
-  transition: background 140ms ease, box-shadow 180ms ease, transform 140ms ease;
 }
 
 .version-card-latest:hover {
@@ -70,6 +84,10 @@ button {
 .version-card-latest.is-outdated {
   box-shadow: 0 0 0 1px rgba(234, 51, 62, 0.65),
     0 0 18px rgba(234, 51, 62, 0.72);
+}
+
+.version-card.is-hidden {
+  display: none;
 }
 
 .version-label {

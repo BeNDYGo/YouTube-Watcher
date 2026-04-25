@@ -6,7 +6,9 @@
   const RELEASES_URL = "https://github.com/BeNDYGo/YouTube-Watcher/releases";
   const DONATE_URL = "https://www.donationalerts.com/r/pipodripo";
 
+  const versionsBlock = document.getElementById("versionsBlock");
   const currentVersion = document.getElementById("currentVersion");
+  const currentVersionButton = document.getElementById("currentVersionButton");
   const latestVersion = document.getElementById("latestVersion");
   const latestVersionButton = document.getElementById("latestVersionButton");
   const versionMessage = document.getElementById("versionMessage");
@@ -16,6 +18,7 @@
   const manifestVersion = chrome.runtime.getManifest().version;
 
   currentVersion.textContent = `v${manifestVersion}`;
+  currentVersionButton.addEventListener("click", () => openTab(RELEASES_URL));
   latestVersionButton.addEventListener("click", () => openTab(RELEASES_URL));
   donateButton.addEventListener("click", () => openTab(DONATE_URL));
   panelToggle.addEventListener("click", handlePanelToggle);
@@ -45,6 +48,7 @@
       }
 
       latestVersion.textContent = `v${remoteVersion}`;
+      syncVersionCards(remoteVersion);
       versionMessage.textContent = buildVersionMessage(
         remoteVersion,
         cleanText(data.message)
@@ -161,6 +165,14 @@
       remoteMessage ||
       `Доступна новая версия v${remoteVersion}. Пожалуйста, обновите расширение`
     );
+  }
+
+  function syncVersionCards(remoteVersion) {
+    const isUpToDate =
+      normalizeVersion(manifestVersion) === normalizeVersion(remoteVersion);
+
+    latestVersionButton.classList.toggle("is-hidden", isUpToDate);
+    versionsBlock.classList.toggle("is-single", isUpToDate);
   }
 
   function cleanVersion(value) {
