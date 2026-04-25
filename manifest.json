@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "YouTube Temporary Playlist",
   "version": "7.6.4",
-  "description": "Adds a temporary floating playlist on YouTube when A is held while clicking videos.",
+  "description": "Добавляет временный плавающий плейлист на YouTube при зажатой клавише A и клике по видео.",
   "permissions": [
     "storage",
     "activeTab"
@@ -10,9 +10,21 @@
   "host_permissions": [
     "https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/*"
   ],
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
   "action": {
     "default_title": "YouTube Watcher",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "logo.png",
+      "32": "logo.png",
+      "48": "logo.png",
+      "128": "logo.png"
+    }
   },
   "content_scripts": [
     {
