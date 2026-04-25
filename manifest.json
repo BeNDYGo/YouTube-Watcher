@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Temporary Playlist",
-  "version": "7.6.4",
+  "version": "7.6.5",
   "description": "Добавляет временный плавающий плейлист на YouTube при зажатой клавише A и клике по видео.",
   "permissions": [
     "storage",

@@ -19,7 +19,7 @@
 
 А так же вы можете менять отображаемое количество видео, тем самым меняв размеры, занимаемые окном расширения
 
-При клике на значок расширения окно можно открыть снова, если вы его закрыли. Так что рекомендуем вам закрепить значок на панели браузера
+Если нажать на иконку расширения откроется меню, где можно посмотреть актуальноть версии и **открыть занова плейлист, если ты его закрыли**
 
 ![Screenshot_1](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_1.png)
 ![Screenshot_2](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_2.png)
@@ -30,8 +30,9 @@
 ![Screenshot_4](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_4.png)
 
 
-# Обновления:
->В случае выхода обновления вы будете видеть уведомление.
+# Меню и Обновления:
+
+Вы можете нажать на иконку расширения и открыть меню, где можно посмотреть актуальную версию(плашки кликабельные), а так же открыть занова окно с плейлистом.
 
 ![Screenshot_5](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_5.png)
 
