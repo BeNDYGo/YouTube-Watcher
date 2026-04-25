@@ -74,7 +74,7 @@
   document.addEventListener("click", handleDocumentClick, true);
   document.addEventListener("fullscreenchange", handleFullscreenChange);
   document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-  listenForExtensionIcon();
+  listenForPopupMessages();
   window.addEventListener("blur", () => {
     state.addKeyDown = false;
   });
@@ -873,7 +873,7 @@
     });
   }
 
-  function listenForExtensionIcon() {
+  function listenForPopupMessages() {
     if (
       typeof chrome === "undefined" ||
       !chrome.runtime ||
@@ -883,14 +883,33 @@
     }
 
     chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      if (message?.type !== "YT_TP_TOGGLE_PANEL") {
+      if (message?.type === "YT_TP_GET_PANEL_STATE") {
+        sendResponse({
+          ok: true,
+          visible: isPanelVisible(),
+          collapsed: state.collapsed,
+          count: state.videos.length
+        });
         return false;
       }
 
-      togglePanel();
-      scrollListToBottom();
-      sendResponse({ ok: true });
-      return true;
+      if (message?.type === "YT_TP_SET_PANEL_VISIBILITY") {
+        if (message.visible) {
+          showCollapsedPanel();
+        } else {
+          hidePanel();
+        }
+
+        sendResponse({
+          ok: true,
+          visible: Boolean(message.visible) && isPanelVisible(),
+          collapsed: state.collapsed,
+          count: state.videos.length
+        });
+        return false;
+      }
+
+      return false;
     });
   }
 
@@ -1109,23 +1128,6 @@
     }
 
     state.panel.classList.remove("yt-tp-hidden");
-  }
-
-  function togglePanel() {
-    ensurePanel();
-
-    if (isFullscreenActive()) {
-      state.hiddenForFullscreen = true;
-      state.panel.classList.add("yt-tp-hidden");
-      return;
-    }
-
-    if (state.panel.classList.contains("yt-tp-hidden")) {
-      showPanel();
-      return;
-    }
-
-    hidePanel();
   }
 
   function setCollapsed(collapsed, animate = true) {

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YouTube Watcher</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup">
+      <h1 class="title">YouTube Watcher</h1>
+
+      <section class="versions" aria-label="Версии расширения">
+        <div class="version-card version-card-current">
+          <span class="version-label">Установлена</span>
+          <span class="version-value" id="currentVersion">...</span>
+        </div>
+
+        <button class="version-card version-card-latest" id="latestVersionButton" type="button">
+          <span class="version-label">Актуальная</span>
+          <span class="version-value" id="latestVersion">...</span>
+        </button>
+      </section>
+
+      <p class="message" id="versionMessage"></p>
+
+      <section class="actions" aria-label="Действия">
+        <button class="donate" id="donateButton" type="button">Donate</button>
+
+        <button class="panel-toggle" id="panelToggle" type="button" aria-pressed="false">
+          <span class="toggle-label">Плейлист</span>
+          <span class="toggle-track" aria-hidden="true">
+            <span class="toggle-thumb"></span>
+          </span>
+        </button>
+      </section>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
