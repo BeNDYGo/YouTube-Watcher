@@ -2,7 +2,7 @@
   "use strict";
 
   const VERSION_URL =
-    "https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/version.json";
+    "https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/main/version.json";
   const RELEASES_URL = "https://github.com/BeNDYGo/YouTube-Watcher/releases";
   const DONATE_URL = "https://www.donationalerts.com/r/pipodripo";
 
@@ -25,7 +25,13 @@
 
   async function loadLatestVersion() {
     try {
-      const response = await fetch(VERSION_URL, { cache: "no-store" });
+      const response = await fetch(buildVersionUrl(), {
+        cache: "no-store",
+        headers: {
+          "cache-control": "no-cache, no-store, max-age=0",
+          pragma: "no-cache"
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -39,7 +45,10 @@
       }
 
       latestVersion.textContent = `v${remoteVersion}`;
-      versionMessage.textContent = cleanText(data.message);
+      versionMessage.textContent = buildVersionMessage(
+        remoteVersion,
+        cleanText(data.message)
+      );
       latestVersionButton.classList.toggle(
         "is-outdated",
         normalizeVersion(remoteVersion) !== normalizeVersion(manifestVersion)
@@ -129,12 +138,42 @@
     chrome.tabs.create({ url });
   }
 
+  function buildVersionUrl() {
+    const url = new URL(VERSION_URL);
+    url.searchParams.set("_", String(Date.now()));
+    return url.toString();
+  }
+
+  function buildVersionMessage(remoteVersion, remoteMessage) {
+    const installedVersion = normalizeVersion(manifestVersion);
+    const latestVersionValue = normalizeVersion(remoteVersion);
+    const messageVersion = extractVersion(remoteMessage);
+
+    if (installedVersion === latestVersionValue) {
+      return "Установлена актуальная версия";
+    }
+
+    if (messageVersion && messageVersion !== latestVersionValue) {
+      return `Доступна новая версия v${remoteVersion}. Пожалуйста, обновите расширение`;
+    }
+
+    return (
+      remoteMessage ||
+      `Доступна новая версия v${remoteVersion}. Пожалуйста, обновите расширение`
+    );
+  }
+
   function cleanVersion(value) {
     return cleanText(value).replace(/^v/i, "");
   }
 
   function normalizeVersion(value) {
     return cleanVersion(value).toLowerCase();
+  }
+
+  function extractVersion(value) {
+    const match = cleanText(value).match(/\bv?(\d+(?:\.\d+)+)\b/i);
+    return match ? normalizeVersion(match[1]) : "";
   }
 
   function cleanText(value) {
