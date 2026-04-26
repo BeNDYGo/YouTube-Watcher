@@ -27,14 +27,12 @@
 ### Вы так же можете перемещать окно временного плейлиста
 
 ![Screenshot_3](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_3.png)
-![Screenshot_4](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_4.png)
-
 
 # Меню и Обновления:
 
 Вы можете нажать на иконку расширения и открыть меню, где можно посмотреть актуальную версию(плашки кликабельные), а так же открыть занова окно с плейлистом.
 
-![Screenshot_5](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_5.png)
+![Screenshot_4](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/Screenshot_4.png)
 
 # Конфиденциальность:
 
