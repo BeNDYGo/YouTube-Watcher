@@ -13,8 +13,7 @@
 
 ⭐*буду благодарен за звездочки*⭐
 
-https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/main/output.mp4
-
+![Demo](https://raw.githubusercontent.com/BeNDYGo/YouTube-Watcher/refs/heads/main/output.gif)
 - Добавление видео в плейлист по нажатию "A"
 - Перемещение окна
 - Настройка размера
